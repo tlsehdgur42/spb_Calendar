@@ -1,0 +1,62 @@
+.closeBtn, .closeBtn3 {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.confirmBtn{
+    width: 60px;
+    background-color: #889f95;
+    position: static;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid ;
+    color:white;
+}
+
+.rejectBtn{
+    width: 60px;
+    background-color: #889f95;
+    position: static;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid ;
+    color:white;
+}
+
+.no-notifications-message {
+    color: #888;
+    font-style: italic;
+}
+
+.notificationsPopup {
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    height: 400px;
+}

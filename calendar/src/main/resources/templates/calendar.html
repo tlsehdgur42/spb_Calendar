@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Online Calendar</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{/css/calendar.css}" rel="stylesheet" />
+    <link th:href="@{/css/notifications.css}" rel="stylesheet" />
+    <script type="text/javascript" th:src="@{/js/calendar.js}"></script>
+    <script type="text/javascript" th:src="@{/js/events.js}"></script>
+    <script type="text/javascript" th:src="@{/js/notifications.js}"></script>
+
+</head>
+<body>
+<div class="top-bar">
+    <!--<button id="toggleSidebarBtn">Toggle Sidebar</button>-->
+    <div style="margin-top: 10px;"></div>
+    &nbsp <a href="#" id="toggleSidebarBtn"> <img id = "menuPhoto" th:src="@{/images/menu-hide.png}" alt="Menu Image"> </a>
+    <a href = "/logout" class="btn"> <img id = "logoutImg" th:src="@{/images/shutdown.png}" alt="Logout Image" style="width: 15px; height: 15px; position: absolute; right: 3px; top: 5px;"></a>
+</div>
+<div class="container" id="calendarContainer">
+    <div class="sidebar" id = "sidebar">
+        <ul class="menu">
+            <li><a href="#" id="addEventBtn">Add Event</a></li>
+            <li><a href="#" id="weeklyViewBtn">Weekly View</a></li>
+            <li><a href="#" id="monthlyViewBtn">Monthly View</a></li>
+            <li><a href="#" id="yearlyViewBtn">Yearly View</a></li>
+            <li><a href="#" id="viewEventsBtn">Events</a> </li>
+            <li><a href="#" id="viewNotificationsBtn">Notifications <img id = "notificationImg" th:src="@{/images/notification.png}" alt="Notification Image"> </a></li>
+        </ul>
+    </div>
+
+    <div id="notificationsPopup" class="notificationsPopup" style="display: none">
+        <div class="popupNotifications">
+            <span class="close" id="closeBtn3">&times;</span>
+            <h3>Notifications</h3>
+            <ul id="notificationsList"></ul>
+        </div>
+    </div>
+
+    <div id="eventsPopup" class="popupEvent" style="display: none;">
+        <div class="popupContent">
+            <span class="close" id="closeBtn2">&times;</span>
+            <h3>Events</h3>
+            <ul id="eventList"></ul>
+        </div>
+    </div>
+
+    <div id="successfulPopUp2" class="popupEvent" style="display: none;">
+        <div class="popupContent">
+            <span class="closeSuccessfulPopUp" id="closeSuccessfulPopUp2">&times;</span>
+            <p>Event rejected successfully!</p>
+        </div>
+    </div>
+
+    <div id="successfulPopUp3" class="popupEvent" style="display: none;">
+        <div class="popupContent">
+            <span class="closeSuccessfulPopUp" id="closeSuccessfulPopUp3">&times;</span>
+            <p>Event confirmed successfully!</p>
+        </div>
+    </div>
+
+    <div id="successfulPopUp4" class="popupEvent" style="display: none;">
+        <div class="popupContent">
+            <span class="closeSuccessfulPopUp" id="closeSuccessfulPopUp4">&times;</span>
+            <p>Event rejected - Only the creator is able to change it! </p>
+        </div>
+    </div>
+
+    <div id="successfulPopUp" class="popupEvent" style="display: none;">
+        <div class="popupContent">
+            <span class="closeSuccessfulPopUp" id="closeSuccessfulPopUp">&times;</span>
+            <p>Event deleted successfully!</p>
+        </div>
+    </div>
+
+    <div id="popupEvent" class="popupEvent">
+        <div class="popupContent">
+            <span class="closeBtn" id="closeBtn">&times;</span>
+            <form id = "submitForm" method="post" th:action="@{/addEvent}" th:object="${event}">
+                <!--<label>Creator:</label>
+                <input type="text" id = "creatorName" th:field="*{creator}">-->
+                <label>Title:</label>
+                <input type="text" id = "eventTitle" th:field="*{title}" placeholder="Enter title">
+                <label>Date: </label>
+                <input type="date" id = "eventDate" th:field="*{date}">
+                <div style = "display:flex; flex-direction: row;">
+                    <label>Starting Hour </label>
+                    <input type="time" id = "eventStartingHour" th:field="*{startingHour}">
+                    &nbsp&nbsp&nbsp
+                    <label>Ending Hour </label>
+                    <input type="time" id = "eventEndingHour" th:field="*{endingHour}">
+                </div>
+                <!--<label>People </label>
+                <input type="text" th:field="*{people}">-->
+                <label for="participants">Participants:</label>
+                <select class="form-control" id="participants" name="people" required multiple>
+                    <option id = "eventParticipants" th:each="user : ${allUsers}" th:value="${user.username}" th:text="${user.name}" th:unless="${user.username == currentUserUsername}"></option>
+                </select>
+                <label>Location </label>
+                <input type="text" id = "eventLocation" th:field="*{location}" placeholder="Enter location">
+                <label>Summary </label>
+                <input type="text" id = "eventSummary" th:field="*{summary}" placeholder="Write something">
+                &nbsp
+                <div id="BtnAlignment">
+                    <button type="submit" id = "submitBtn">Submit</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id = "popupEvent1" class="popupEvent1">
+
+        <div class="popupContent1">
+            <span class="closeBtn1" id="closeBtn1">&times;</span>
+            <form id = "updateForm" th:action="@{/updateEvent}" th:object="${event}">
+                <!--<label>Creator:</label>
+                <input type="text" id = "creatorName" th:field="*{creator}">-->
+                <label>Title:</label>
+                <input type="text" id = "eventTitle1" th:field="*{title}" placeholder="Enter title">
+                <label>Date: </label>
+                <input type="date" id = "eventDate1" th:field="*{date}">
+                <div style = "display:flex; flex-direction: row;">
+                    <label>Starting Hour </label>
+                    <input type="time" id = "eventStartingHour1" th:field="*{startingHour}">
+                    &nbsp&nbsp&nbsp
+                    <label>Ending Hour </label>
+                    <input type="time" id = "eventEndingHour1" th:field="*{endingHour}">
+                </div>
+                <!--<label>People </label>
+                <input type="text" th:field="*{people}">-->
+                <label for="participants">Participants:</label>
+                <select class="form-control" id="participants1" name="people" required multiple>
+                    <option id = "eventParticipants1" th:each="user : ${allUsers}" th:value="${user.username}" th:text="${user.name}" th:unless="${user.username == currentUserUsername}"></option>
+                </select>
+                <label>Location </label>
+                <input type="text" id = "eventLocation1" th:field="*{location}" placeholder="Enter location">
+                <label>Summary </label>
+                <input type="text" id = "eventSummary1" th:field="*{summary}" placeholder="Write something">
+                &nbsp
+                <div id="BtnAlignment1">
+                    <button type="button" id = "updateBtn">Update Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="calendar">
+        <div class="header" id = "header">
+            <button id="prevMonthBtn">&lt;</button>
+            <h2 id="headerMonth"></h2> &nbsp <h2 id = "headerYear"> </h2>
+            <button id="nextMonthBtn">&gt;</button>
+        </div>
+        <table id="calendarTable">
+            <thead id ="calendarDays">
+            <tr id = "calendarDaysRow">
+                <th class = 'days'>Sun</th>
+                <th class = 'days'>Mon</th>
+                <th class = 'days'>Tue</th>
+                <th class = 'days'>Wed</th>
+                <th class = 'days'>Thu</th>
+                <th class = 'days'>Fri</th>
+                <th class = 'days'>Sat</th>
+            </tr>
+            <tr>
+                <td>
+
+                </td>
+            </tr>
+            </thead>
+            <tbody id="calendarBody">
+            <!-- Calendar days will be dynamically generated here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="goto-today">
+    <div class="goto">
+        <input type="text" id="inputMonthYear" placeholder="yyyy/mm" class="date-input" />
+        <button id="goToMonthBtn" class="goto-btn">go</button>
+    </div>
+</div>
+</body>
+</html>
