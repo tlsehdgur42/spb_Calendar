@@ -1,10 +1,7 @@
 package dev.springboot.calendar.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -29,6 +26,9 @@ public class EventParticipant {
     private boolean confirmed;
 
     public EventParticipant(Event event, User user, boolean b) {
+        this.event = event;
+        this.user = user;
+        this.confirmed = b;
     }
 
 }

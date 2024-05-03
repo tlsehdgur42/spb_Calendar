@@ -40,14 +40,14 @@ public class EventServiceImpl implements EventService {
     public void updateEvent(int eventId, Event updatedEvent) {
         // 주어진 이벤트 ID에 해당하는 이벤트를 찾습니다.
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid event id: " + eventId));
+                .orElseThrow(() -> new IllegalArgumentException("이벤트 ID를 찾을 수 없습니다. " + eventId));
 
         // 업데이트된 이벤트의 속성으로 이벤트를 업데이트합니다.
         event.setTitle(updatedEvent.getTitle());
         event.setDate(updatedEvent.getDate());
         event.setStartingHour(updatedEvent.getStartingHour());
         event.setEndingHour(updatedEvent.getEndingHour());
-        event.setPeople(updatedEvent.getPeople());
+//        event.setPeople(updatedEvent.getPeople());
         event.setLocation(updatedEvent.getLocation());
         event.setSummary(updatedEvent.getSummary());
 
@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
     public void confirmNotification(int notificationId) {
         // 주어진 알림 ID에 해당하는 알림을 확인 처리합니다.
         EventParticipant notification = eventParticipantRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid event id: " + notificationId));
+                .orElseThrow(() -> new IllegalArgumentException("이벤트 ID를 찾을 수 없습니다. " + notificationId));
         notification.setConfirmed(true);
         eventParticipantRepository.save(notification);
     }

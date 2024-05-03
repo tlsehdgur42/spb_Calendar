@@ -1,0 +1,502 @@
+/* Overall page styling */
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* Prevent scrollbars */
+        font-family: Poppins;
+    }
+
+    .container {
+        margin: 0 auto;
+        padding: 5px;
+        border-top: 1px solid;
+        border-color: #ab81dc;
+        width: 100%;
+        margin-top: 50px;
+        position: relative;
+        display: flex;
+        height: 80%;
+        /* Set the container height to 100% of the viewport height /
+           height: 100%; / Set the container height to 100% of the viewport height /
+           overflow: hidden; / Prevent scrollbars */
+    }
+
+    .sidebar {
+        width:30%;
+        background-color: #f5f5f5;
+        border-right: 1px solid #ddd;
+    }
+
+    .popupEvent, .popupEvent1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .popupContent, .popupContent1 {
+        background-color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 500px;
+        width:70%;
+        height: 480px;
+    }
+
+    .successfulPopUp {
+        position: center;
+        width: 100px;
+        height: 20%;
+        background-color: #b78e8e;
+        display: none;
+        z-index: 9999;
+    }
+
+    #popUp {
+        background-color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 500px;
+        width:70%;
+        height: 200px;
+    }
+
+    #closeSuccessfulPopUp {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .closeBtn, .closeBtn1 {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+        font-size: 18px;
+        color: #888;
+        transition: color 0.2s;
+    }
+
+    .close:hover {
+        color: #333;
+    }
+
+    .editEventBtn {
+        width: 60px;
+        background-color: #889f95;
+        position: static;
+        font-size: 12px;
+        cursor: pointer;
+        border: 1px solid;
+        color: white;
+    }
+
+    .deleteEventBtn {
+        width: 60px;
+        background-color: #f34444;
+        position: static;
+        font-size: 12px;
+        cursor: pointer;
+        border: 1px solid;
+        color: white;
+    }
+
+    .eventList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .event-item {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .event-item:last-child {
+        border-bottom: none;
+    }
+
+    .event-item h4 {
+        margin: 0;
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: inherit;
+    }
+
+    .event-item p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .error-message {
+        color: red;
+    }
+
+    #eventList {
+        max-height: 300px; /* Adjust the height as needed */
+        overflow-y: scroll;
+    }
+
+    .no-events-message {
+        color: #888;
+        font-style: italic;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #submitForm {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #updateForm {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+    }
+
+    form label {
+        font-weight: bold;
+        margin: auto;
+    }
+
+    form input,
+    form button {
+        padding: 5px;
+    }
+
+    #BtnAlignment, #BtnAlignment1 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #submitBtn, #updateBtn {
+        background-color: #fff;
+        padding: 10px 20px;
+        background-color: #deaeea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 40%;
+    }
+
+    #submitBtn:hover {
+        background-color: #9b59b6;
+    }
+
+    #updateBtn:hover {
+        background-color: #9b59b6;
+    }
+
+    .sidebar {
+        width: 170px;
+        background-color: #f5f5f5;
+    }
+
+    .menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .menu li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .menu li a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        display: block;
+        transition: background-color 0.3s ease;
+    }
+
+    .menu li a:hover {
+        color: #9b59b6;
+    }
+
+    .calendar {
+        position: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: right;
+        background-color: #fff;
+        overflow: auto;
+        width: 80%;
+        height: 80%;
+    }
+
+    #calendarBody {
+        margin-left: 10%;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: #f5f5f5;
+    }
+
+    #prevMonthBtn,
+    #nextMonthBtn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 25px;
+        color: #777;
+        transition: color 0.3s ease;
+    }
+
+    #prevMonthBtn:hover,
+    #nextMonthBtn:hover {
+        color: #9b59b6;
+    }
+
+    #monthYear {
+        font-size: 25px;
+        color: #333;
+        text-transform: capitalize;
+        letter-spacing: 1px;
+    }
+
+    /* Calendar table styling */
+    table {
+        width: 80%;
+        height: 80%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    thead th {
+        padding: 0 50px;
+        text-align: center;
+        font-weight: bold;
+        color: #777;
+        text-transform: capitalize;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tbody td {
+        padding: 10px;
+        text-align: center;
+        color: #777;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Styling for calendar days */
+    td.empty {
+        background-color: #f7ebfa;
+    }
+
+    td.event {
+        background-color: #f5f5f5;
+    }
+
+    td.today {
+        background-color: #deaeea;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    #calendarBody tr td tr td:hover {
+        background-color: #e0e0e0;
+    }
+
+    /* Styling for selected day */
+    td.selected {
+        background-color: #ce85e0;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    /* Styling for hover effect on calendar days */
+    tbody td:not(.empty):hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+
+    /* Styling for hover effect on selected day */
+    tbody td.selected:hover {
+        background-color: #9b59b6;
+        color: #fff;
+    }
+
+    .goto-today {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60%;
+        margin: 0 auto;
+        margin-bottom: 20px;
+    }
+
+    .goto {
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        overflow: hidden;
+        border: 1px solid;
+    }
+
+    .date-input {
+        width: 70%;
+        height: 30px;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        padding: 0 20px;
+    }
+
+    .goto-btn {
+        padding: 5px 10px;
+        border: 1px solid;
+        border-radius: 5px;
+        background-color: transparent;
+        cursor: pointer;
+    }
+
+    /* Styling for Weekly View */
+    .weekly-view .calendar {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .weekly-view .header {
+        justify-content: space-around;
+    }
+
+    .weekly-view table {
+        width: 100%;
+        height: auto;
+    }
+
+    .weekly-view thead th {
+        padding: 10px;
+    }
+
+    .weekly-view tbody td {
+        padding: 20px;
+    }
+
+    /* Styling for Yearly View */
+    .yearly-view .calendar {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .yearly-view .header {
+        display: none;
+    }
+
+    .yearly-view table {
+        width: 100%;
+        height: 100%;
+    }
+
+    .yearly-view thead th {
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        color: #777;
+        text-transform: uppercase;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .yearly-view tbody td {
+        padding: 10px;
+        text-align: center;
+        color: #777;
+        border-bottom: 1px solid #ddd;
+        width: 14%;
+    }
+
+    .yearly-view td.empty {
+        background-color: #f8f8f8;
+    }
+
+    .yearly-view td.today {
+        background-color: #efd6f5;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .yearly-view td.selected {
+        background-color: #ce85e0;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .yearly-view tbody td:not(.empty):hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+
+    .yearly-month {
+        display: inline-block;
+        width: 25%;
+        text-align: center;
+        padding: 20px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .yearly-view {
+        display: none; /* Hide the yearly view by default */
+        height: 100%;
+        overflow: auto;
+    }
+
+    .btn {
+        position: fixed;
+        top: 15px;
+        right: 30px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        /*background-image: url("../images/computer-icons-user-profile-avatar-profile_30x30.jpg");*/
+        background-size: cover;
+    }
+
+    .top-bar {
+        height: 50px;
+        border-top: 1px solid;
+        border-color: #ab81dc;
+        width: 100%;
+        position: absolute;
+        background-color: #deaeea;
+    }
+
+

@@ -178,6 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
             var newRow = table.insertRow();
 
             for (var col = 0; col < 7; col++) {
+                // 만약 첫번째 행에 해당 날짜에 1보다 작을 경우 빈셀을 만든다.
                 if (row === 0 && col < startingDay) {
                     // 월의 첫째 날 이전의 빈 셀
                     var newCell = newRow.insertCell();
@@ -372,7 +373,7 @@ var goToCurrentMonthBtn = document.getElementById("goToCurrentMonthBtn");
 
 // 버튼에 이벤트 리스너 추가
 goToCurrentMonthBtn.addEventListener("click", function() {
-    var today = new Date();
+    var today = new Date(); // 현재 날짜
     var currentMonth = today.getMonth() + 1; // 월은 0부터 시작
     var currentYear = today.getFullYear();
 

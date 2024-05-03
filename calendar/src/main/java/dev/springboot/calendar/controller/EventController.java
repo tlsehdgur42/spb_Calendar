@@ -8,18 +8,13 @@ import dev.springboot.calendar.repository.EventRepository;
 import dev.springboot.calendar.repository.UserRepository;
 import dev.springboot.calendar.service.EventService;
 import dev.springboot.calendar.service.UserService;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
+@RequestMapping("/api/event")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class EventController {
 
     private final UserService userService;
@@ -38,39 +35,41 @@ public class EventController {
     private final EventParticipantRepository eventParticipantRepository;
 
     // HttpServletRequest를 Model에 추가하는 메서드
-    @ModelAttribute("request")
-    public HttpServletRequest getRequest(HttpServletRequest request) {
-        return request;
-    }
+//    @ModelAttribute("request")
+//    public HttpServletRequest getRequest(HttpServletRequest request) {
+//        return request;
+//    }
+//
+//    // HttpSession을 Model에 추가하는 메서드
+//    @ModelAttribute("session")
+//    public HttpSession getSession(HttpSession session) {
+//        return session;
+//    }
+//
+//    // ServletContext를 Model에 추가하는 메서드
+//    @ModelAttribute("servletContext")
+//    public ServletContext getServletContext(ServletContext servletContext) {
+//        return servletContext;
+//    }
+//
+//    // HttpServletResponse를 Model에 추가하는 메서드
+//    @ModelAttribute("response")
+//    public HttpServletResponse getResponse(HttpServletResponse response) {
+//        return response;
+//    }
 
-    // HttpSession을 Model에 추가하는 메서드
-    @ModelAttribute("session")
-    public HttpSession getSession(HttpSession session) {
-        return session;
-    }
 
-    // ServletContext를 Model에 추가하는 메서드
-    @ModelAttribute("servletContext")
-    public ServletContext getServletContext(ServletContext servletContext) {
-        return servletContext;
-    }
-
-    // HttpServletResponse를 Model에 추가하는 메서드
-    @ModelAttribute("response")
-    public HttpServletResponse getResponse(HttpServletResponse response) {
-        return response;
-    }
 
     // 이벤트 페이지를 보여주는 메서드
-    @GetMapping("/event")
-    public String event(Model model){
-        Event event = new Event();
-        model.addAttribute("event", event); // 모델에 이벤트 추가
-        return "calendar"; // calendar.html 템플릿 반환
-    }
+//    @GetMapping("/event")
+//    public String event(Model model){
+//        Event event = new Event();
+//        model.addAttribute("event", event); // 모델에 이벤트 추가
+//        return "calendar"; // calendar.html 템플릿 반환
+//    }
 
-    // 이벤트 목록을 가져오는 메서드
-    @GetMapping("/events")
+    // 캘린더 일정 목록을 가져오는 메서드
+    @GetMapping
     public ResponseEntity<List<Event>> getEvents(@RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int pageSize,
                                                  HttpSession session) {
@@ -103,73 +102,81 @@ public class EventController {
     }
 
     // 이벤트를 삭제하는 메서드
-    @DeleteMapping("/deleteEvent")
-    public ResponseEntity<String> deleteEvent(@RequestParam("id") int eventId, HttpSession session) {
+    @DeleteMapping("{eventId}")
+    public ResponseEntity<String> deleteEvent(@PathVariable("eventId") int eventId, HttpSession session) {
         User user = (User) session.getAttribute("user"); // 세션에서 사용자 정보 가져오기
         Optional<Event> event = eventRepository.findById(eventId); // 이벤트 ID로 이벤트 찾기
         int userId = user.getId(); // 사용자 ID 가져오기
         int creatorId = event.get().getCreator().getId(); // 이벤트 생성자 ID 가져오기
         if (userId == creatorId){ // 사용자가 이벤트 생성자인 경우
             eventService.deleteEvent(eventId); // 이벤트 삭제 처리
-            return ResponseEntity.ok("Event deleted successfully"); // 성공 메시지 반환
+            return ResponseEntity.ok(user.getUsername() + "일정을 삭제했습니다."); // 성공 메시지 반환
         }
         else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting event. Only creator can delete"); // 오류 메시지 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("내부 서버 오류입니다"); // 오류 메시지 반환
         }
     }
+
+    // 이벤트 추가하는 메서드 신동혁 수정했음
+    @PostMapping
+    public ResponseEntity<Event> addEvent(@RequestBody Event event, HttpSession session) {
+
+        User user = (User) session.getAttribute("user"); // 세션에서 사용자 정보 가져오기
+        event.setCreator(user); // 이벤트의 생성자 설정
+
+        System.out.println(event.getTitle() + event.getDate() + event.getStartingHour() + event.getEndingHour() + event.getLocation() + event.getSummary()); // 이벤트 정보 출력
+        Event savedEvent = eventRepository.save(event); // 이벤트 저장 및 반환
+        System.out.println();
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
+    }
+
 
     // 이벤트 추가하는 메서드
-    @PostMapping("/addEvent")
-    public String addEvent(@ModelAttribute("event") Event event, @RequestParam("people") String people, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user"); // 세션에서 사용자 정보 가져오기
-        String result = null; // 결과 변수 초기화
-        System.out.println(event); // 이벤트 정보 출력
-        event.setCreator(user); // 이벤트의 생성자 설정
-        String[] peopleArray = people.split(","); // 참가자들을 쉼표로 분리하여 배열로 저장
-
-        List<User> allUsers = userRepository.findAll(); // 모든 사용자 검색
-
-        model.addAttribute("allUsers", allUsers); // 모델에 모든 사용자 추가
-        //eventService.eventRegister(event);
-        Event savedEvent = eventRepository.save(event); // 이벤트 저장 및 반환
-
-        // 각 사용자에 대해 반복
-        for (String username : peopleArray) {
-            User participant = userRepository.findByUsername(username.trim()); // 사용자 이름으로 사용자 찾기
-            if (participant != null) { // 사용자가 존재하는 경우
-                // 이벤트 참가자 엔티티 생성 및 이벤트 및 참가자 설정
-                EventParticipant eventParticipant = new EventParticipant();
-                eventParticipant.setEvent(savedEvent); // 이벤트 설정
-                eventParticipant.setUser(participant); // 참가자 설정
-                eventParticipant.setConfirmed(false); // 확인 여부 설정
-
-                // 이벤트 참가자 저장
-                eventParticipantRepository.save(eventParticipant);
-            }
-        }
-        model.addAttribute("event", event); // 모델에 이벤트 추가
-        //Event newEvent = new Event();
-        //model.addAttribute("event", newEvent);
-
-        result = "calendar"; // calendar.html 템플릿 반환
-        return result; // 결과 반환
-    }
+//    @PostMapping
+//    public ResponseEntity<Event> addEvent(Event event, String people, HttpSession session) {
+//
+//        User user = (User) session.getAttribute("user"); // 세션에서 사용자 정보 가져오기
+//        System.out.println(event); // 이벤트 정보 출력
+//        event.setCreator(user); // 이벤트의 생성자 설정
+//        String[] peopleArray = people.split(","); // 참가자들을 쉼표로 분리하여 배열로 저장
+//
+//        Event savedEvent = eventRepository.save(event); // 이벤트 저장 및 반환
+//
+//        // 각 사용자에 대해 반복 각 참가자들의 이름을 반복해서 찾아서 맞으면 저장
+//        for (String username : peopleArray) {
+//            User participant = userRepository.findByUsername(username.trim()).orElse(null);
+////                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다" + username)); // 사용자 이름으로 사용자 찾기
+//
+//            if (participant != null) { // 사용자가 존재하는 경우
+//                // 이벤트 참가자 엔티티 생성 및 이벤트 및 참가자 설정
+//                EventParticipant eventParticipant = new EventParticipant();
+//                eventParticipant.setEvent(savedEvent); // 이벤트 설정
+//                eventParticipant.setUser(participant); // 참가자 설정
+//                eventParticipant.setConfirmed(false); // 확인 여부 설정
+//
+//                // 이벤트 참가자 저장
+//                eventParticipantRepository.save(eventParticipant);
+//            }
+//        }
+//        return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
+//    }
 
 
     // 이벤트를 업데이트하는 메서드
-    @PutMapping("/updateEvent")
-    public ResponseEntity<String> updateEvent(@RequestParam("id") int eventId, @RequestBody Event updatedEvent, HttpSession session) {
+    @PutMapping("/{eventId}")
+    public ResponseEntity<String> updateEvent(@PathVariable("eventId") int eventId, @RequestBody Event updatedEvent, HttpSession session) {
+
         User user = (User) session.getAttribute("user"); // 세션에서 사용자 정보 가져오기
         Optional<Event> event = eventRepository.findById(eventId); // 이벤트 ID로 이벤트 찾기
         int userId = user.getId(); // 사용자 ID 가져오기
         int creatorId = event.get().getCreator().getId(); // 이벤트 생성자 ID 가져오기
         if (userId == creatorId){ // 사용자가 이벤트 생성자인 경우
             eventService.updateEvent(eventId, updatedEvent); // 이벤트 업데이트 처리
-            return ResponseEntity.ok("Event updated successfully"); // 성공 메시지 반환
+            return ResponseEntity.ok(user.getUsername() + "일정 수정 완료"); // 성공 메시지 반환
         }
         else {
             System.out.println("ERROR");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating event. Only creator can update"); // 오류 메시지 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("내부 서버 오류"); // 오류 메시지 반환
         }
     }
 }

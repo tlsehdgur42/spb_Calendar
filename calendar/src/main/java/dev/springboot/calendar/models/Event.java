@@ -22,7 +22,7 @@ public class Event {
     private String date;
     private String startingHour;
     private String endingHour;
-    private String people;
+//    private String people;
     private String location;
     private String summary;
 
