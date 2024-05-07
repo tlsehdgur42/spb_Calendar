@@ -6,6 +6,7 @@ import dev.springboot.calendar.models.User;
 import dev.springboot.calendar.repository.UserRepository;
 import dev.springboot.calendar.service.UserService;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -146,20 +147,19 @@ public class MainController {
 
     // api 로그인
     @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestBody User user, HttpSession session) {
-        System.out.println(user);
-        // 사용자가 넣은 아이디값 담기
-        String userName = user.getUsername();
-
-        User userData = userRepository.findByUsername(userName).orElseThrow(()-> new IllegalArgumentException("사용자의 아이디를 찾을 수 없습니다" + userName)); // 사용자 이름으로 사용자 데이터 검색
-        if (userData != null && user.getPassword().equals(userData.getPassword())) { // 사용자가 존재하고 비밀번호가 일치하는 경우
-            // 세션 생성 및 세션에 사용자 정보 추가
+    public ResponseEntity<User> loginUser(@RequestBody User user, HttpSession session, HttpServletResponse response) {
+        // 사용자 인증 로직
+        User userData = userRepository.findByUsername(user.getUsername()).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없음" + user.getUsername()));
+        if (userData != null && user.getPassword().equals(userData.getPassword())) {
             session.setAttribute("user", userData);
-            // 클라이언트에게 세션ID 전달
-            String sessionId = session.getId(); // 생성된 세션의 ID를 가져옴
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("sessionId", sessionId);
-            return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).body(userData);
+
+            String sessionId = session.getId();
+            // 세션 ID를 쿠키에 담아 클라이언트에게 전달
+            Cookie cookie = new Cookie("sessionId", sessionId);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            return ResponseEntity.status(HttpStatus.OK).body(userData);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

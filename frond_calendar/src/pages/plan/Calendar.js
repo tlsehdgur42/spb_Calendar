@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PopupEvent from './PopupEvent';
+import { AuthContext } from '../../context/AuthProvider';
+
 
 const Calendar = () => {
+  const { login } = useContext(AuthContext);
   // 현재 날짜 상태 및 초기 달력 상태
   const [currentDate, setCurrentDate] = useState(new Date()); // 현재 날짜를 상태로 관리합니다.
   const [headerMonth, setHeaderMonth] = useState('');
@@ -14,6 +17,18 @@ const Calendar = () => {
   useEffect(() => {
     updateCalendar(); // useEffect 훅을 사용하여 컴포넌트가 마운트될 때 초기화 함수를 실행합니다.
   }, []);
+
+
+  // 세션에서 사용자 이름을 가져오는 함수
+  const getSessionUsername = () => {
+    // 세션에서 사용자 이름 가져오는 로직
+    const user = sessionStorage.getItem('user');
+    return user;
+  };
+  
+  // 세션에서 사용자 이름 가져오기
+  const username = getSessionUsername();
+
 
   // 현재 날짜와 보기에 기반하여 달력을 업데이트하는 함수
   const updateCalendar = () => {
@@ -135,33 +150,38 @@ const Calendar = () => {
   };
 
   return (
-    <div className="calendar">
-      <div className="header" id="header">
-        <button id="prevMonthBtn" onClick={() => handlePrevMonthClick(currentDate.getMonth(), currentDate.getFullYear())}>&lt;</button>
-        <h2 id="headerYear">{headerYear}. </h2> <h2 id="headerMonth">{headerMonth}</h2>
-        <button id="nextMonthBtn" onClick={() => handleNextMonthClick(currentDate.getMonth(), currentDate.getFullYear())}>&gt;</button>
+    <>
+      <div className="calendar">
+        <div className="header" id="header">
+          <button id="prevMonthBtn" onClick={() => handlePrevMonthClick(currentDate.getMonth(), currentDate.getFullYear())}>&lt;</button>
+          <h2 id="headerYear">{headerYear}. </h2> <h2 id="headerMonth">{headerMonth}</h2>
+          <button id="nextMonthBtn" onClick={() => handleNextMonthClick(currentDate.getMonth(), currentDate.getFullYear())}>&gt;</button>
+        </div>
+        <table id="calendarTable">
+          <thead id="calendarDays">
+            <tr id="calendarDaysRow">
+              <th className="days">일</th>
+              <th className="days">월</th>
+              <th className="days">화</th>
+              <th className="days">수</th>
+              <th className="days">목</th>
+              <th className="days">금</th>
+              <th className="days">토</th>
+            </tr>
+          </thead>
+          <tbody id="calendarBody">{calendarBody}</tbody>
+        </table>
+        {showPopup && (
+          <PopupEvent
+            clickedDate={clickedDate}
+            onClose={handleClosePopup}
+          />
+        )}
       </div>
-      <table id="calendarTable">
-        <thead id="calendarDays">
-          <tr id="calendarDaysRow">
-            <th className="days">일</th>
-            <th className="days">월</th>
-            <th className="days">화</th>
-            <th className="days">수</th>
-            <th className="days">목</th>
-            <th className="days">금</th>
-            <th className="days">토</th>
-          </tr>
-        </thead>
-        <tbody id="calendarBody">{calendarBody}</tbody>
-      </table>
-      {showPopup && (
-        <PopupEvent
-          clickedDate={clickedDate}
-          onClose={handleClosePopup}
-        />
-      )}
-    </div>
+      <div>
+      {login.username && <div>로그인된 사용자: {login.username}</div>}
+      </div>
+    </>
   );
 };
 

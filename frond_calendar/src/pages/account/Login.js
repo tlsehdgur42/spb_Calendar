@@ -1,12 +1,14 @@
+
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthProvider';
 
 const Login = () => {
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [loginDTO, setLoginDTO] = useState({ username: "", password: "" });
-  const { username, password } = loginDTO;
 
   const onChangeLogin = (e) => {
     setLoginDTO({ ...loginDTO, [e.target.name]: e.target.value });
@@ -15,12 +17,7 @@ const Login = () => {
   const postLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/user/login", loginDTO);
-      console.log(response);
-      
-      // 서버로부터 받은 세션 식별자를 쿠키에 저장
-      // document.cookie = `session_id=${response.data.sessionId};`;
-
+      await login(loginDTO); // 로그인 함수 호출
       // 로그인 성공 후 페이지 이동
       navigate(`/calendar`);
     } catch (error) {
@@ -34,10 +31,10 @@ const Login = () => {
       <h1>로그인</h1>
       <form onSubmit={postLogin} method='post'>
         <div>
-          <input type='text' name='username' placeholder='아이디' value={username} onChange={onChangeLogin} />
+          <input type='text' name='username' placeholder='아이디' value={loginDTO.username} onChange={onChangeLogin} />
         </div>
         <div>
-          <input type='password' id='password' name='password' placeholder='비밀번호' value={password} onChange={onChangeLogin} />
+          <input type='password' id='password' name='password' placeholder='비밀번호' value={loginDTO.password} onChange={onChangeLogin} />
         </div>
         <div>
           <button type="submit">로그인</button>

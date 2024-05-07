@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../../context/AuthProvider';
 
 
 const PopupEvent = ({ clickedDate, onClose }) => {
+  const { sessionId } = useContext(AuthContext); // 세션 ID를 가져옴
+
   const [title, setTitle] = useState('');
   const [color, setColor] = useState('#ffffff');
   const [date, setDate] = useState('');
@@ -10,14 +13,12 @@ const PopupEvent = ({ clickedDate, onClose }) => {
   const [startingHour, setStartingHour] = useState('');
   const [endingHour, setEndingHour] = useState('');
 
-
-  // 문제점 : 값을 보낼 때 각각의 타입이 제각각이다. 그래서 보낼 때 타입을 변경해서 보내던가 아니면 백엔드에서 값을 받을 때 타입을 맞추던가
-  // 백엔드에서 바꿔봤는데 token `JsonToken.START_OBJECT 이런 에러가 나옴 ㅅㅂ..
+  
   const handleSave = () => {
     const eventData = {
       title: title,
       color: color,
-      date: {...clickedDate},
+      date: `${clickedDate.year}. ${clickedDate.month}. ${clickedDate.date}`,
       startingHour: startingHour,
       endingHour: endingHour,
       summary: summary,

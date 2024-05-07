@@ -120,7 +120,6 @@ public class EventController {
     // 이벤트 추가하는 메서드 신동혁 수정했음
     @PostMapping
     public ResponseEntity<Event> addEvent(@RequestBody Event event, HttpSession session) {
-
         User user = (User) session.getAttribute("user"); // 세션에서 사용자 정보 가져오기
         event.setCreator(user); // 이벤트의 생성자 설정
 
